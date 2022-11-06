@@ -1,0 +1,88 @@
+use anyhow::bail;
+use clap::Parser;
+use sha2::{Digest, Sha256};
+
+use crate::{block_fetcher::get_block_headers_for_range, s3_pusher::S3Pusher};
+
+mod block_fetcher;
+mod s3_pusher;
+
+#[derive(Parser, Debug)]
+struct Args {
+    // #[arg(long)]
+    // job_index: u64,
+    #[arg(long)]
+    total_jobs: u64,
+
+    #[arg(long)]
+    from_height: u64,
+    #[arg(long)]
+    to_height: u64,
+}
+
+fn get_job_id() -> anyhow::Result<String> {
+    let job_id = std::env::var("AWS_BATCH_JOB_ID").unwrap();
+    let split: Vec<&str> = job_id.split(":").collect();
+    if split.len() != 2 {
+        bail!("Bad job id length");
+    }
+
+    Ok(split[0].to_owned())
+}
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    let args = Args::parse();
+    let job_index: u64 = std::env::var("AWS_BATCH_JOB_ARRAY_INDEX")
+        .unwrap()
+        .parse()
+        .unwrap();
+
+    let job_id = get_job_id()?;
+    let s3_prefix = format!("{}/{}/", job_id, job_index);
+    let s3_pusher = S3Pusher::new(s3_prefix).await?;
+
+    let (from_height, to_height) = get_block_range(&args, job_index);
+
+    println!("{} {}", from_height, to_height);
+    let block_headers = get_block_headers_for_range(from_height, to_height).await?;
+
+    let block_hashes = block_headers
+        .iter()
+        .map(|header| {
+            let mut hash = compute_sha256(&compute_sha256(header));
+            hash.reverse();
+            hex::encode(hash)
+        })
+        .collect::<Vec<String>>();
+
+    println!("Pushing to S3");
+
+    let s3_body = (&block_hashes).join("\n");
+    s3_pusher.push_bytes("hashes", s3_body.into_bytes()).await?;
+
+    for hash in block_hashes {
+        println!("{}", hash);
+    }
+
+    Ok(())
+}
+
+fn get_block_range(args: &Args, job_index: u64) -> (u64, u64) {
+    assert!(args.from_height <= args.to_height);
+    assert!(job_index < args.total_jobs);
+
+    let num_blocks = args.to_height - args.from_height + 1;
+    let blocks_per_worker = (args.total_jobs + num_blocks - 1) / args.total_jobs;
+
+    let start_height = args.from_height + blocks_per_worker * job_index;
+    let end_height = std::cmp::min(start_height + blocks_per_worker - 1, args.to_height);
+
+    (start_height, end_height)
+}
+
+fn compute_sha256(data: &[u8]) -> Vec<u8> {
+    let mut hasher = Sha256::new();
+    hasher.update(data);
+    hasher.finalize().to_vec()
+}
