@@ -19,7 +19,7 @@ impl S3Pusher {
     pub async fn push_bytes(&self, key: &str, bytes: Vec<u8>) -> anyhow::Result<()> {
         self.client
             .put_object()
-            .bucket("patbatch-outputs")
+            .bucket("btc-warp")
             .key(format!("{}{}", self.prefix, key))
             .body(ByteStream::from(bytes))
             .send()
@@ -32,7 +32,7 @@ impl S3Pusher {
         let mut buf: Vec<u8> = Vec::new();
         self.client
             .get_object()
-            .bucket("patbatch-outputs")
+            .bucket("btc-warp")
             .key(format!("{}{}", self.prefix, key))
             .send()
             .await
