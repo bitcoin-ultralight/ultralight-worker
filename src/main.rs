@@ -30,6 +30,7 @@ async fn main() -> anyhow::Result<()> {
     let S3_ENABLED: bool = true;
     let FACTORS = [11, 10, 10];
     let B = [1, 1, 1];
+    let SHIFT = 500000;
     // B Implicitly defines M
     // N_i is defined by N_{i-1} and F_{i-1}
 
@@ -88,8 +89,8 @@ async fn main() -> anyhow::Result<()> {
         let offset = (job_index as usize) * nb_proofs * (nb_blocks_per_proof - 1);
 
         for i in 0..nb_proofs {
-            let start_block_idx = offset + i * (nb_blocks_per_proof - 1);
-            let end_block_idx = offset + (i + 1) * (nb_blocks_per_proof - 1);
+            let start_block_idx = SHIFT + offset + i * (nb_blocks_per_proof - 1);
+            let end_block_idx = SHIFT + offset + (i + 1) * (nb_blocks_per_proof - 1);
             let ParentHashAndHeaders {
                 parent_hash,
                 headers,
