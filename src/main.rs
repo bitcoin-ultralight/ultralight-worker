@@ -1,8 +1,8 @@
-use std::time::Instant;
+#![feature(array_chunks)]
 
 use anyhow::bail;
-use ultralight_worker::block_fetcher::ParentHashAndHeaders;
 use clap::Parser;
+use ultralight_worker::block_fetcher::ParentHashAndHeaders;
 
 use ultralight_worker::{
     block_fetcher::get_parent_hash_and_headers, proof::ReusableProver, s3_pusher::S3Pusher,
@@ -30,6 +30,7 @@ fn get_job_id() -> anyhow::Result<String> {
 
     Ok(split[0].to_owned())
 }
+const CHUNK_SIZE: usize = 10;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -52,18 +53,26 @@ async fn main() -> anyhow::Result<()> {
         headers,
     } = get_parent_hash_and_headers(from_height, to_height).await?;
 
+    println!("Creating prover");
     let reusable_prover = ReusableProver::new();
+    println!("Prover created");
 
-    let mut block_height = from_height;
-    for header in headers {
-        let hash = header.compute_hash();
-        let start = Instant::now();
-        let bytes = reusable_prover.prove_header(header);
-        let elapsed = start.elapsed();
-        println!("{} {} {}", block_height, bytes.len(), elapsed.as_micros());
-        // TODO retry
-        s3_pusher.push_bytes(&format!("{:0>10}-{}", block_height, hash.human()), bytes).await?;
-        block_height += 1;
+    let chunks = headers.as_slice().array_chunks::<CHUNK_SIZE>();
+    assert!(chunks.remainder().is_empty());
+
+    let mut chunk_start_height = from_height;
+    for chunk in chunks {
+        println!("Proving {}", chunk_start_height);
+        let proof = reusable_prover.prove_headers(chunk);
+        println!("Proved {}", chunk_start_height);
+        let chunk_end_height = chunk_start_height + CHUNK_SIZE as u64 - 1;
+        s3_pusher
+            .push_bytes(
+                &format!("{:0>10}-{:0>10}", chunk_start_height, chunk_end_height),
+                proof,
+            )
+            .await?;
+        chunk_start_height += CHUNK_SIZE as u64;
     }
 
     Ok(())
@@ -71,10 +80,12 @@ async fn main() -> anyhow::Result<()> {
 
 fn get_block_range(args: &Args, job_index: u64) -> (u64, u64) {
     assert!(args.from_height <= args.to_height);
+    let num_blocks = args.to_height - args.from_height + 1;
+    assert_eq!(num_blocks % CHUNK_SIZE as u64, 0);
+    assert_eq!(num_blocks % args.total_jobs, 0);
     assert!(job_index < args.total_jobs);
 
-    let num_blocks = args.to_height - args.from_height + 1;
-    let blocks_per_worker = (args.total_jobs + num_blocks - 1) / args.total_jobs;
+    let blocks_per_worker = num_blocks / args.total_jobs;
 
     let start_height = args.from_height + blocks_per_worker * job_index;
     let end_height = std::cmp::min(start_height + blocks_per_worker - 1, args.to_height);

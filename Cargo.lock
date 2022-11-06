@@ -385,13 +385,14 @@ dependencies = [
 [[package]]
 name = "btc"
 version = "0.1.0"
-source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=53d7697bac5a73c80f5e1997446de6671f2bb256#53d7697bac5a73c80f5e1997446de6671f2bb256"
+source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4#2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4"
 dependencies = [
  "anyhow",
  "hex",
  "hex-literal",
  "itertools",
  "num",
+ "num-bigint",
  "plonky2",
  "plonky2_ecdsa",
  "plonky2_field",
@@ -946,7 +947,7 @@ dependencies = [
 [[package]]
 name = "maybe_rayon"
 version = "0.1.0"
-source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=53d7697bac5a73c80f5e1997446de6671f2bb256#53d7697bac5a73c80f5e1997446de6671f2bb256"
+source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4#2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4"
 dependencies = [
  "rayon",
 ]
@@ -1082,15 +1083,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "num_threads"
-version = "0.1.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2819ce041d2ee131036f4fc9d6ae7ae125a3a40e97ba64d04fe799ad9dabbb44"
-dependencies = [
- "libc",
-]
-
-[[package]]
 name = "once_cell"
 version = "1.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1172,7 +1164,7 @@ checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 [[package]]
 name = "plonky2"
 version = "0.1.0"
-source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=53d7697bac5a73c80f5e1997446de6671f2bb256#53d7697bac5a73c80f5e1997446de6671f2bb256"
+source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4#2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4"
 dependencies = [
  "anyhow",
  "itertools",
@@ -1193,7 +1185,7 @@ dependencies = [
 [[package]]
 name = "plonky2_ecdsa"
 version = "0.1.0"
-source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=53d7697bac5a73c80f5e1997446de6671f2bb256#53d7697bac5a73c80f5e1997446de6671f2bb256"
+source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4#2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4"
 dependencies = [
  "anyhow",
  "itertools",
@@ -1210,7 +1202,7 @@ dependencies = [
 [[package]]
 name = "plonky2_field"
 version = "0.1.0"
-source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=53d7697bac5a73c80f5e1997446de6671f2bb256#53d7697bac5a73c80f5e1997446de6671f2bb256"
+source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4#2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4"
 dependencies = [
  "anyhow",
  "itertools",
@@ -1225,7 +1217,7 @@ dependencies = [
 [[package]]
 name = "plonky2_u32"
 version = "0.1.0"
-source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=53d7697bac5a73c80f5e1997446de6671f2bb256#53d7697bac5a73c80f5e1997446de6671f2bb256"
+source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4#2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4"
 dependencies = [
  "anyhow",
  "itertools",
@@ -1239,7 +1231,7 @@ dependencies = [
 [[package]]
 name = "plonky2_util"
 version = "0.1.0"
-source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=53d7697bac5a73c80f5e1997446de6671f2bb256#53d7697bac5a73c80f5e1997446de6671f2bb256"
+source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4#2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4"
 
 [[package]]
 name = "ppv-lite86"
@@ -1685,12 +1677,10 @@ dependencies = [
 
 [[package]]
 name = "time"
-version = "0.3.16"
+version = "0.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fab5c8b9980850e06d92ddbe3ab839c062c801f3927c0fb8abd6fc8e918fbca"
+checksum = "a561bf4617eebd33bca6434b988f39ed798e527f51a1e797d0ee4f61c0a38376"
 dependencies = [
- "libc",
- "num_threads",
  "serde",
  "time-core",
  "time-macros",
@@ -1704,9 +1694,9 @@ checksum = "2e153e1f1acaef8acc537e68b44906d2db6436e2b35ac2c6b42640fff91f00fd"
 
 [[package]]
 name = "time-macros"
-version = "0.2.5"
+version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "65bb801831d812c562ae7d2bfb531f26e66e4e1f6b17307ba4149c5064710e5b"
+checksum = "d967f99f534ca7e495c575c62638eebc2898a8c84c119b89e250477bc4ba16b2"
 dependencies = [
  "time-core",
 ]
