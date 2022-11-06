@@ -1,5 +1,6 @@
 use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_s3::{types::ByteStream, Client};
+use tokio::io::AsyncReadExt;
 
 pub struct S3Pusher {
     client: Client,
@@ -25,5 +26,21 @@ impl S3Pusher {
             .await?;
 
         Ok(())
+    }
+
+    pub async fn pull_bytes(&self, key: &str) -> anyhow::Result<Vec<u8>> {
+        let mut buf: Vec<u8> = Vec::new();
+        self.client
+            .get_object()
+            .bucket("patbatch-outputs")
+            .key(format!("{}{}", self.prefix, key))
+            .send()
+            .await
+            .unwrap()
+            .body
+            .into_async_read()
+            .read_to_end(&mut buf)
+            .await?;
+        return Ok(buf);
     }
 }

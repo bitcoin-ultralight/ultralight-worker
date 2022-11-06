@@ -18,5 +18,5 @@ anyhow = "1.0"
 #btc = { path = "../plonky2-btc/btc" }
 #plonky2 = { path = "../plonky2-btc/plonky2" }
 
-btc = { git = "https://github.com/bitcoin-ultralight/plonky2-btc.git", rev = "0ef186a516d641a33077d05c794df368413e0751" }
-plonky2 = { git = "https://github.com/bitcoin-ultralight/plonky2-btc.git", rev = "0ef186a516d641a33077d05c794df368413e0751" }
+btc = { git = "https://github.com/bitcoin-ultralight/plonky2-btc.git" }
+plonky2 = { git = "https://github.com/bitcoin-ultralight/plonky2-btc.git" }
