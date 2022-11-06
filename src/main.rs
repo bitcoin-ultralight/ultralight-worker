@@ -25,6 +25,7 @@ async fn main() -> anyhow::Result<()> {
 
     let args: Vec<String> = std::env::args().collect();
     let layer_num: usize = args[1].parse::<usize>().unwrap();
+    let bucket_name: usize = args[2].parse::<usize>().unwrap(); // This will be a specific number, like 6969
 
     let S3_ENABLED: bool = true;
     let FACTORS = [3, 8, 3];
@@ -34,7 +35,7 @@ async fn main() -> anyhow::Result<()> {
     let N_0 = 100;
 
     let job_id = get_job_id()?;
-    let s3_prefix = format!("{}/{:0>8}/", job_id, job_index);
+    let s3_prefix = format!("{}/", bucket_name);
     let s3_pusher = S3Pusher::new(s3_prefix).await?;
 
     println!("Creating prover");
