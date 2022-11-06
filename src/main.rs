@@ -1,15 +1,10 @@
 use anyhow::bail;
-use block_fetcher::ParentHashAndHeaders;
+use ultralight_worker::block_fetcher::ParentHashAndHeaders;
 use clap::Parser;
 
-use crate::{
+use ultralight_worker::{
     block_fetcher::get_parent_hash_and_headers, proof::ReusableProver, s3_pusher::S3Pusher,
 };
-
-mod block;
-mod block_fetcher;
-mod proof;
-mod s3_pusher;
 
 #[derive(Parser, Debug)]
 struct Args {
