@@ -28,9 +28,13 @@ async fn main() -> anyhow::Result<()> {
     let bucket_name: usize = args[2].parse::<usize>().unwrap(); // This will be a specific number, like 6969
 
     let S3_ENABLED: bool = true;
-    let FACTORS = [11, 10, 10];
-    let B = [1, 1, 1];
-    let SHIFT = 500000;
+    // let MAX_IDX = 731809;
+    // 731808 = 7 * 9 * 8 *11 * 11 * 12
+    let FACTORS = [13, 11, 11, 9, 8, 7];
+    let B = [244, 23, 3, 1, 1, 1];
+    // M = [250, 250, 175, 56, 7, 1] // 1 but put in 2
+    let SHIFT = 0;
+    let N = [731809, 60984, 5544, 504, 56, 7, 1];
     // B Implicitly defines M
     // N_i is defined by N_{i-1} and F_{i-1}
 
@@ -54,6 +58,14 @@ async fn main() -> anyhow::Result<()> {
         let child_proofs_per_proof = FACTORS[layer_num];
         let offset = (job_index as usize) * nb_proofs * (child_proofs_per_proof);
         for i in 0..nb_proofs {
+            if (job_index * nb_proofs + i >= N[layer_num]) {
+                println!(
+                    "Skipping {} (>= {})",
+                    job_index * nb_proofs + i,
+                    N[layer_num]
+                );
+                continue;
+            }
             let start_proof_idx = offset + i * (child_proofs_per_proof);
             let end_proof_idx = offset + (i + 1) * (child_proofs_per_proof); // To be inclusive
             println!(
@@ -89,6 +101,14 @@ async fn main() -> anyhow::Result<()> {
         let offset = (job_index as usize) * nb_proofs * (nb_blocks_per_proof - 1);
 
         for i in 0..nb_proofs {
+            if (job_index * nb_proofs + i >= N[layer_num]) {
+                println!(
+                    "Skipping {} (>= {})",
+                    job_index * nb_proofs + i,
+                    N[layer_num]
+                );
+                continue;
+            }
             let start_block_idx = SHIFT + offset + i * (nb_blocks_per_proof - 1);
             let end_block_idx = SHIFT + offset + (i + 1) * (nb_blocks_per_proof - 1);
             let ParentHashAndHeaders {

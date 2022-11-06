@@ -81,9 +81,6 @@ impl ReusableProver {
     }
 
     pub fn prove_headers_layer(&self, proofs: Vec<Vec<u8>>) -> Vec<u8> {
-        for i in 0..proofs.len() {
-            println!("{:?} {:?}", i, proofs[i]);
-        }
         let (data, _) = compile_and_run_ln_circuit(
             0,
             proofs
@@ -91,7 +88,6 @@ impl ReusableProver {
                 .map(|p| {
                     let t = ProofWithPublicInputs::from_bytes(p, &self.last_circuit_data.common)
                         .unwrap();
-                    println!("t: {:?}", t.public_inputs);
                     t
                 })
                 .collect(),
