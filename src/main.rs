@@ -27,7 +27,7 @@ async fn main() -> anyhow::Result<()> {
     let layer_num: usize = args[1].parse::<usize>().unwrap();
     let bucket_name: usize = args[2].parse::<usize>().unwrap(); // This will be a specific number, like 6969
 
-    let S3_ENABLED: bool = false;
+    let S3_ENABLED: bool = true;
     let FACTORS = [11, 10, 10];
     let B = [1, 1, 1];
     // B Implicitly defines M
