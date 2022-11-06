@@ -1,9 +1,10 @@
 use anyhow::bail;
+use block_fetcher::ParentHashAndHeaders;
 use clap::Parser;
-use sha2::{Digest, Sha256};
 
-use crate::{block_fetcher::get_block_headers_for_range, s3_pusher::S3Pusher};
+use crate::{block_fetcher::get_parent_hash_and_headers, s3_pusher::S3Pusher};
 
+mod block;
 mod block_fetcher;
 mod s3_pusher;
 
@@ -22,7 +23,7 @@ struct Args {
 
 fn get_job_id() -> anyhow::Result<String> {
     let job_id = std::env::var("AWS_BATCH_JOB_ID").unwrap();
-    let split: Vec<&str> = job_id.split(":").collect();
+    let split: Vec<&str> = job_id.split(':').collect();
     if split.len() != 2 {
         bail!("Bad job id length");
     }
@@ -45,20 +46,22 @@ async fn main() -> anyhow::Result<()> {
     let (from_height, to_height) = get_block_range(&args, job_index);
 
     println!("{} {}", from_height, to_height);
-    let block_headers = get_block_headers_for_range(from_height, to_height).await?;
 
-    let block_hashes = block_headers
+    let ParentHashAndHeaders {
+        parent_hash,
+        headers,
+    } = get_parent_hash_and_headers(from_height, to_height).await?;
+
+    println!("{}", parent_hash.human());
+
+    let block_hashes = headers
         .iter()
-        .map(|header| {
-            let mut hash = compute_sha256(&compute_sha256(header));
-            hash.reverse();
-            hex::encode(hash)
-        })
+        .map(|header| header.compute_hash().human())
         .collect::<Vec<String>>();
 
     println!("Pushing to S3");
 
-    let s3_body = (&block_hashes).join("\n");
+    let s3_body = block_hashes.join("\n");
     s3_pusher.push_bytes("hashes", s3_body.into_bytes()).await?;
 
     for hash in block_hashes {
@@ -79,10 +82,4 @@ fn get_block_range(args: &Args, job_index: u64) -> (u64, u64) {
     let end_height = std::cmp::min(start_height + blocks_per_worker - 1, args.to_height);
 
     (start_height, end_height)
-}
-
-fn compute_sha256(data: &[u8]) -> Vec<u8> {
-    let mut hasher = Sha256::new();
-    hasher.update(data);
-    hasher.finalize().to_vec()
 }

@@ -1,5 +1,5 @@
 use aws_config::meta::region::RegionProviderChain;
-use aws_sdk_s3::{Client, types::ByteStream};
+use aws_sdk_s3::{types::ByteStream, Client};
 
 pub struct S3Pusher {
     client: Client,

@@ -1,6 +1,11 @@
 use reqwest::{header::RANGE, StatusCode};
 
-pub async fn get_block_headers_for_range(from_height: u64, to_height: u64) -> anyhow::Result<Vec<Vec<u8>>> {
+use crate::block::{BlockHash, BlockHeader};
+
+pub async fn get_block_headers_for_range(
+    from_height: u64,
+    to_height: u64,
+) -> anyhow::Result<Vec<BlockHeader>> {
     assert!(from_height <= to_height);
 
     let client = reqwest::Client::new();
@@ -28,5 +33,33 @@ pub async fn get_block_headers_for_range(from_height: u64, to_height: u64) -> an
     let chunks = bytes.chunks_exact(HEADER_SIZE as usize);
     assert_eq!(chunks.remainder().len(), 0);
 
-    Ok(chunks.map(|chunk| chunk.to_vec()).collect::<Vec<Vec<u8>>>())
+    Ok(chunks
+        .map(|chunk| BlockHeader(chunk.to_vec()))
+        .collect::<Vec<BlockHeader>>())
+}
+
+pub struct ParentHashAndHeaders {
+    pub parent_hash: BlockHash,
+    pub headers: Vec<BlockHeader>,
+}
+
+pub async fn get_parent_hash_and_headers(
+    from_height: u64,
+    to_height: u64,
+) -> anyhow::Result<ParentHashAndHeaders> {
+    let fetch_from_height = if from_height > 0 { from_height - 1 } else { 0 };
+
+    let mut headers = get_block_headers_for_range(fetch_from_height, to_height).await?;
+
+    let parent_hash = if from_height > 0 {
+        let parent_header = headers.remove(0);
+        parent_header.compute_hash()
+    } else {
+        BlockHash(vec![0u8; 32])
+    };
+
+    Ok(ParentHashAndHeaders {
+        parent_hash,
+        headers,
+    })
 }
