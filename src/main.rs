@@ -2,10 +2,13 @@ use anyhow::bail;
 use block_fetcher::ParentHashAndHeaders;
 use clap::Parser;
 
-use crate::{block_fetcher::get_parent_hash_and_headers, s3_pusher::S3Pusher};
+use crate::{
+    block_fetcher::get_parent_hash_and_headers, proof::ReusableProver, s3_pusher::S3Pusher,
+};
 
 mod block;
 mod block_fetcher;
+mod proof;
 mod s3_pusher;
 
 #[derive(Parser, Debug)]
@@ -52,20 +55,16 @@ async fn main() -> anyhow::Result<()> {
         headers,
     } = get_parent_hash_and_headers(from_height, to_height).await?;
 
-    println!("{}", parent_hash.human());
+    let reusable_prover = ReusableProver::new();
 
-    let block_hashes = headers
-        .iter()
-        .map(|header| header.compute_hash().human())
-        .collect::<Vec<String>>();
-
-    println!("Pushing to S3");
-
-    let s3_body = block_hashes.join("\n");
-    s3_pusher.push_bytes("hashes", s3_body.into_bytes()).await?;
-
-    for hash in block_hashes {
-        println!("{}", hash);
+    let mut block_height = from_height;
+    for header in headers {
+        let hash = header.compute_hash();
+        let bytes = reusable_prover.prove_header(header);
+        println!("{} {}", block_height, bytes.len());
+        // TODO retry
+        s3_pusher.push_bytes(&format!("{}-{}", block_height, hash.human()), bytes).await?;
+        block_height += 1;
     }
 
     Ok(())
