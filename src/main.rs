@@ -1,6 +1,7 @@
 use std::time::Instant;
 
 use anyhow::bail;
+use rayon::prelude::{IntoParallelIterator, IndexedParallelIterator, ParallelIterator};
 use ultralight_worker::block_fetcher::ParentHashAndHeaders;
 use clap::Parser;
 
@@ -54,17 +55,16 @@ async fn main() -> anyhow::Result<()> {
 
     let reusable_prover = ReusableProver::new();
 
-    let mut block_height = from_height;
-    for header in headers {
-        let hash = header.compute_hash();
+    headers.into_par_iter().enumerate().for_each(|(idx, header)| {
+        let block_height = from_height + idx as u64;
+        //let hash = header.compute_hash();
         let start = Instant::now();
         let bytes = reusable_prover.prove_header(header);
         let elapsed = start.elapsed();
         println!("{} {} {}", block_height, bytes.len(), elapsed.as_micros());
         // TODO retry
-        s3_pusher.push_bytes(&format!("{:0>10}-{}", block_height, hash.human()), bytes).await?;
-        block_height += 1;
-    }
+        // s3_pusher.push_bytes(&format!("{:0>10}-{}", block_height, hash.human()), bytes).await?;
+    });
 
     Ok(())
 }
