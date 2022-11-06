@@ -28,7 +28,7 @@ async fn main() -> anyhow::Result<()> {
     let bucket_name: usize = args[2].parse::<usize>().unwrap(); // This will be a specific number, like 6969
 
     let S3_ENABLED: bool = true;
-    let FACTORS = [3, 8, 3];
+    let FACTORS = [3, 9, 3];
     let B = [11, 1, 1];
     // B Implicitly defines M
     // N_i is defined by N_{i-1} and F_{i-1}
