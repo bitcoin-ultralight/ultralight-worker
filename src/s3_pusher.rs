@@ -9,7 +9,7 @@ pub struct S3Pusher {
 
 impl S3Pusher {
     pub async fn new(prefix: String) -> anyhow::Result<Self> {
-        let region_provider = RegionProviderChain::default_provider().or_else("us-east-1");
+        let region_provider = RegionProviderChain::default_provider().or_else("us-west-2");
         let config = aws_config::from_env().region(region_provider).load().await;
         let client = Client::new(&config);
 

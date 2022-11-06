@@ -32,7 +32,7 @@ impl ReusableProver {
         let mut last_circuit_data = data;
 
         if layer_num > 1 {
-            for i in 1..layer_num - 1 {
+            for i in 1..layer_num {
                 let proof_res = compile_and_run_ln_circuit(
                     0, // UNUSED
                     Vec::new(),
