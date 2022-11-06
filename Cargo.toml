@@ -15,8 +15,8 @@ aws-sdk-s3 = "0.21.0"
 tokio = { version = "1", features = ["full"] }
 anyhow = "1.0"
 
-#btc = { path = "../plonky2-btc/btc" }
-#plonky2 = { path = "../plonky2-btc/plonky2" }
+# btc = { path = "../plonky2-btc/btc" }
+# plonky2 = { path = "../plonky2-btc/plonky2" }
 
 btc = { git = "https://github.com/bitcoin-ultralight/plonky2-btc.git" }
 plonky2 = { git = "https://github.com/bitcoin-ultralight/plonky2-btc.git" }

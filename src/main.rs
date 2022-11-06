@@ -27,12 +27,11 @@ async fn main() -> anyhow::Result<()> {
     let layer_num: usize = args[1].parse::<usize>().unwrap();
     let bucket_name: usize = args[2].parse::<usize>().unwrap(); // This will be a specific number, like 6969
 
-    let S3_ENABLED: bool = true;
-    let FACTORS = [4, 9, 4];
-    let B = [11, 1, 1];
+    let S3_ENABLED: bool = false;
+    let FACTORS = [11, 10, 10];
+    let B = [1, 1, 1];
     // B Implicitly defines M
     // N_i is defined by N_{i-1} and F_{i-1}
-    let N_0 = 100;
 
     let job_id = get_job_id()?;
     let s3_prefix = format!("{}/", bucket_name);
@@ -52,10 +51,10 @@ async fn main() -> anyhow::Result<()> {
         // let start_block = job_index * final_step;
         let nb_proofs = B[layer_num];
         let child_proofs_per_proof = FACTORS[layer_num];
-        let offset = (job_index as usize) * nb_proofs * (child_proofs_per_proof - 1);
+        let offset = (job_index as usize) * nb_proofs * (child_proofs_per_proof);
         for i in 0..nb_proofs {
-            let start_proof_idx = offset + i * (child_proofs_per_proof - 1);
-            let end_proof_idx = offset + (i + 1) * (child_proofs_per_proof - 1); // To be inclusive
+            let start_proof_idx = offset + i * (child_proofs_per_proof);
+            let end_proof_idx = offset + (i + 1) * (child_proofs_per_proof); // To be inclusive
             println!(
                 "job_id={} job_index={} start_proof_idx={} end_proof_idx={}",
                 job_id, job_index, start_proof_idx, end_proof_idx,
@@ -63,7 +62,7 @@ async fn main() -> anyhow::Result<()> {
             if (S3_ENABLED) {
                 // Get the child proofs
                 let mut child_proofs = Vec::new();
-                for i in start_proof_idx..end_proof_idx + 1 {
+                for i in start_proof_idx..end_proof_idx {
                     let proof = s3_pusher
                         .pull_bytes(&format!("{:0>10}-{:0>10}", layer_num - 1, i))
                         .await?;
