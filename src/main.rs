@@ -28,7 +28,7 @@ async fn main() -> anyhow::Result<()> {
     let bucket_name: usize = args[2].parse::<usize>().unwrap(); // This will be a specific number, like 6969
 
     let S3_ENABLED: bool = true;
-    let FACTORS = [3, 9, 3];
+    let FACTORS = [4, 9, 4];
     let B = [11, 1, 1];
     // B Implicitly defines M
     // N_i is defined by N_{i-1} and F_{i-1}
@@ -56,7 +56,10 @@ async fn main() -> anyhow::Result<()> {
         for i in 0..nb_proofs {
             let start_proof_idx = offset + i * (child_proofs_per_proof - 1);
             let end_proof_idx = offset + (i + 1) * (child_proofs_per_proof - 1);
-
+            println!(
+                "job_id={} job_index={} start_proof_idx={} end_proof_idx={}",
+                job_id, job_index, start_proof_idx, end_proof_idx,
+            );
             // Get the child proofs
             let mut child_proofs = Vec::new();
             for i in start_proof_idx..end_proof_idx {
@@ -65,10 +68,7 @@ async fn main() -> anyhow::Result<()> {
                     .await?;
                 child_proofs.push(proof);
             }
-            println!(
-                "job_id={} job_index={} start_proof_idx={} end_proof_idx={}",
-                job_id, job_index, start_proof_idx, end_proof_idx,
-            );
+
             println!("Proving {}", start_proof_idx);
             let proof = reusable_prover.prove_headers_layer(child_proofs);
             println!("Proved {}", start_proof_idx);
