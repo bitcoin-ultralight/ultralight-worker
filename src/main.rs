@@ -55,24 +55,24 @@ async fn main() -> anyhow::Result<()> {
         let offset = (job_index as usize) * nb_proofs * (child_proofs_per_proof - 1);
         for i in 0..nb_proofs {
             let start_proof_idx = offset + i * (child_proofs_per_proof - 1);
-            let end_proof_idx = offset + (i + 1) * (child_proofs_per_proof - 1);
+            let end_proof_idx = offset + (i + 1) * (child_proofs_per_proof - 1); // To be inclusive
             println!(
                 "job_id={} job_index={} start_proof_idx={} end_proof_idx={}",
                 job_id, job_index, start_proof_idx, end_proof_idx,
             );
-            // Get the child proofs
-            let mut child_proofs = Vec::new();
-            for i in start_proof_idx..end_proof_idx {
-                let proof = s3_pusher
-                    .pull_bytes(&format!("{:0>10}-{:0>10}", layer_num - 1, i))
-                    .await?;
-                child_proofs.push(proof);
-            }
-
-            println!("Proving {}", start_proof_idx);
-            let proof = reusable_prover.prove_headers_layer(child_proofs);
-            println!("Proved {}", start_proof_idx);
             if (S3_ENABLED) {
+                // Get the child proofs
+                let mut child_proofs = Vec::new();
+                for i in start_proof_idx..end_proof_idx + 1 {
+                    let proof = s3_pusher
+                        .pull_bytes(&format!("{:0>10}-{:0>10}", layer_num - 1, i))
+                        .await?;
+                    child_proofs.push(proof);
+                }
+
+                println!("Proving {}", start_proof_idx);
+                let proof = reusable_prover.prove_headers_layer(child_proofs);
+                println!("Proved {}", start_proof_idx);
                 s3_pusher
                     .push_bytes(
                         &format!("{:0>10}-{:0>10}", layer_num, job_index * nb_proofs + i),
