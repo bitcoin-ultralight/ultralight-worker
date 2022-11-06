@@ -385,7 +385,7 @@ dependencies = [
 [[package]]
 name = "btc"
 version = "0.1.0"
-source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4#2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4"
+source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=0ef186a516d641a33077d05c794df368413e0751#0ef186a516d641a33077d05c794df368413e0751"
 dependencies = [
  "anyhow",
  "hex",
@@ -947,7 +947,7 @@ dependencies = [
 [[package]]
 name = "maybe_rayon"
 version = "0.1.0"
-source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4#2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4"
+source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=0ef186a516d641a33077d05c794df368413e0751#0ef186a516d641a33077d05c794df368413e0751"
 dependencies = [
  "rayon",
 ]
@@ -1164,7 +1164,7 @@ checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 [[package]]
 name = "plonky2"
 version = "0.1.0"
-source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4#2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4"
+source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=0ef186a516d641a33077d05c794df368413e0751#0ef186a516d641a33077d05c794df368413e0751"
 dependencies = [
  "anyhow",
  "itertools",
@@ -1185,7 +1185,7 @@ dependencies = [
 [[package]]
 name = "plonky2_ecdsa"
 version = "0.1.0"
-source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4#2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4"
+source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=0ef186a516d641a33077d05c794df368413e0751#0ef186a516d641a33077d05c794df368413e0751"
 dependencies = [
  "anyhow",
  "itertools",
@@ -1202,7 +1202,7 @@ dependencies = [
 [[package]]
 name = "plonky2_field"
 version = "0.1.0"
-source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4#2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4"
+source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=0ef186a516d641a33077d05c794df368413e0751#0ef186a516d641a33077d05c794df368413e0751"
 dependencies = [
  "anyhow",
  "itertools",
@@ -1217,7 +1217,7 @@ dependencies = [
 [[package]]
 name = "plonky2_u32"
 version = "0.1.0"
-source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4#2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4"
+source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=0ef186a516d641a33077d05c794df368413e0751#0ef186a516d641a33077d05c794df368413e0751"
 dependencies = [
  "anyhow",
  "itertools",
@@ -1231,7 +1231,7 @@ dependencies = [
 [[package]]
 name = "plonky2_util"
 version = "0.1.0"
-source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4#2d5644420f6f6c7d45d1b2b1a9a8e1b99a3ca9f4"
+source = "git+https://github.com/bitcoin-ultralight/plonky2-btc.git?rev=0ef186a516d641a33077d05c794df368413e0751#0ef186a516d641a33077d05c794df368413e0751"
 
 [[package]]
 name = "ppv-lite86"

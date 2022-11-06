@@ -1,10 +1,14 @@
-use btc::{btc::{make_header_circuit, HeaderTarget, MultiHeaderTarget}, l1::{compile_l1_circuit, run_l1_circuit}};
+use btc::{
+    btc::{make_header_circuit, HeaderTarget, MultiHeaderTarget},
+    l1::{compile_l1_circuit, run_l1_circuit},
+};
 use plonky2::{
     iop::witness::{PartialWitness, Witness},
     plonk::{
         circuit_builder::CircuitBuilder,
         circuit_data::{CircuitConfig, CircuitData},
-        config::{GenericConfig, PoseidonGoldilocksConfig}, proof::ProofWithPublicInputs,
+        config::{GenericConfig, PoseidonGoldilocksConfig},
+        proof::ProofWithPublicInputs,
     },
 };
 
@@ -21,7 +25,7 @@ pub struct ReusableProver {
 
 impl ReusableProver {
     pub fn new() -> Self {
-        let (data, header_target) = compile_l1_circuit().unwrap();
+        let (data, header_target) = compile_l1_circuit(11).unwrap();
 
         Self {
             data,
@@ -29,14 +33,23 @@ impl ReusableProver {
         }
     }
 
-    pub fn prove_headers(&self, headers: &[BlockHeader; 10]) -> Vec<u8> {
-        let hashes_hexs = headers.each_ref().map(|header| hex::encode(header.compute_hash().0));
-        let header_hexs = headers.each_ref().map(|header| hex::encode(&header.0));
+    pub fn prove_headers(&self, headers: &[BlockHeader]) -> Vec<u8> {
+        let header_hexs = headers
+            .iter()
+            .map(|header| hex::encode(&header.0))
+            .collect::<Vec<String>>();
+        let header_hex_ref = header_hexs
+            .iter()
+            .map(|hex| hex.as_str())
+            .collect::<Vec<&str>>();
 
-        let hash_hex_ref = hashes_hexs.each_ref().map(|hex| hex.as_str());
-        let header_hex_ref = header_hexs.each_ref().map(|hex| hex.as_str());
-
-        let proof = run_l1_circuit(&self.data, &self.header_target, header_hex_ref, hash_hex_ref).unwrap();
+        let proof = run_l1_circuit(
+            &self.data,
+            &self.header_target,
+            header_hex_ref.as_slice(),
+            headers.len(),
+        )
+        .unwrap();
 
         proof.to_bytes().unwrap()
     }
