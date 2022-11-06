@@ -18,7 +18,17 @@ pub async fn get_block_headers_for_range(
     );
 
     const URL: &str = "http://44.202.17.16/output.bin";
-    let response = client.get(URL).header(RANGE, range).send().await?;
+
+    let mut i = 0;
+    let response = loop {
+        let request = client.get(URL).header(RANGE, &range).send().await;
+        if request.is_ok() || i >= 5 {
+            break request;
+        } else {
+            println!("Retrying due to error {:?}", request);
+        }
+        i += 1;
+    }?;
 
     //println!("{:?}", response);
     //let content_range_header = response.headers().get("content-range").unwrap().to_str().unwrap();
