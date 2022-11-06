@@ -42,7 +42,7 @@ impl ReusableProver {
 
         let (exp, mantissa) = compute_exp_and_mantissa(header_bits);
 
-        println!("exp: {}, mantissa: {}", exp, mantissa);
+        //println!("exp: {}, mantissa: {}", exp, mantissa);
 
         for i in 0..256 {
             if i < 256 - exp && mantissa & (1 << (255 - exp - i)) != 0 {
@@ -55,8 +55,8 @@ impl ReusableProver {
         let proof = self.data.prove(pw).unwrap();
         let bytes = proof.to_bytes().unwrap();
 
-        let deserialized_proof = ProofWithPublicInputs::from_bytes(bytes.clone(), &self.data.common).unwrap();
-        self.data.verify(deserialized_proof).unwrap();
+        //let deserialized_proof = ProofWithPublicInputs::from_bytes(bytes.clone(), &self.data.common).unwrap();
+        //self.data.verify(deserialized_proof).unwrap();
 
         bytes
     }

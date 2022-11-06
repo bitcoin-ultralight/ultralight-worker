@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use anyhow::bail;
 use ultralight_worker::block_fetcher::ParentHashAndHeaders;
 use clap::Parser;
@@ -38,7 +40,7 @@ async fn main() -> anyhow::Result<()> {
         .unwrap();
 
     let job_id = get_job_id()?;
-    let s3_prefix = format!("{}/{}/", job_id, job_index);
+    let s3_prefix = format!("{}/{:0>8}/", job_id, job_index);
     let s3_pusher = S3Pusher::new(s3_prefix).await?;
 
     let (from_height, to_height) = get_block_range(&args, job_index);
@@ -55,10 +57,12 @@ async fn main() -> anyhow::Result<()> {
     let mut block_height = from_height;
     for header in headers {
         let hash = header.compute_hash();
+        let start = Instant::now();
         let bytes = reusable_prover.prove_header(header);
-        println!("{} {}", block_height, bytes.len());
+        let elapsed = start.elapsed();
+        println!("{} {} {}", block_height, bytes.len(), elapsed.as_micros());
         // TODO retry
-        s3_pusher.push_bytes(&format!("{}-{}", block_height, hash.human()), bytes).await?;
+        s3_pusher.push_bytes(&format!("{:0>10}-{}", block_height, hash.human()), bytes).await?;
         block_height += 1;
     }
 
